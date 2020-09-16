@@ -2,18 +2,7 @@ import * as functions from "firebase-functions"
 import { Condition, Song } from "./interface"
 import { app } from "./app"
 
-const SDFfda = {
-  flutter: 13,
-  helo: 0,
-}
 const db = app.firestore()
-
-const song: Song = {
-  singer: "alicia_lee",
-  songLink: "testlink1234",
-  songName: "마음을_드려요",
-  conditionReference: db.collection("conditions").doc("test"),
-}
 
 export const addSampleSong = functions.https.onRequest(async (req, res) => {
   //initialize sample condition
@@ -96,45 +85,45 @@ export const increaseCondition = functions.https.onRequest(async (req, res) => {
     console.log("---condition after increasing---")
     console.log(condition)
 
-    const result = await snapshot.ref.set(condition)
-    console.log("condition updated at " + result.writeTime)
-    return result
+    const writeResult = await snapshot.ref.set(condition)
+    console.log("condition updated at " + writeResult.writeTime)
+    return writeResult
   })
   res.send(`${songId}'s condition updated at ${result.writeTime}`)
 })
 
-export const addMessage = functions.https.onRequest(async (req, res) => {
-  const flutterCount = req.query.flutter
+// export const addMessage = functions.https.onRequest(async (req, res) => {
+//   const flutterCount = req.query.flutter
 
-  if (flutterCount == undefined) {
-    res.send("query is not defined")
-    return
-  }
+//   if (flutterCount == undefined) {
+//     res.send("query is not defined")
+//     return
+//   }
 
-  const writeResult = await db.collection("song").add({ flutter: flutterCount })
-  res.json({ result: `hello ${writeResult.id}` })
-})
+//   const writeResult = await db.collection("song").add({ flutter: flutterCount })
+//   res.json({ result: `hello ${writeResult.id}` })
+// })
 
-export const sayPretty = functions.https.onRequest(async (req, res) => {
-  console.log(req.path)
-  console.log("지니니")
-  res.send("예뿐지니")
-})
+// export const sayPretty = functions.https.onRequest(async (req, res) => {
+//   console.log(req.path)
+//   console.log("테스트")
+//   res.send("예뿐해서니")
+// })
 
-interface Message {
-  original: string
-}
+// interface Message {
+//   original: string
+// }
 
-export const messages = functions.https.onRequest(async (req, res) => {
-  console.log("i")
-  const querySnapShot = await db.collection("message").get()
-  const messageArray: Message[] = []
-  querySnapShot.docs.map((doc) => {
-    const data = doc.data() as Message
-    messageArray.push(data)
-  })
-  res.send(messageArray)
-})
+// export const messages = functions.https.onRequest(async (req, res) => {
+//   console.log("i")
+//   const querySnapShot = await db.collection("message").get()
+//   const messageArray: Message[] = []
+//   querySnapShot.docs.map((doc) => {
+//     const data = doc.data() as Message
+//     messageArray.push(data)
+//   })
+//   res.send(messageArray)
+// })
 
 // // test code
 // const getEmotions = (emoitions : string[])=>{

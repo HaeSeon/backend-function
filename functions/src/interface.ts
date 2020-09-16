@@ -1,5 +1,3 @@
-import firebase = require("firebase")
-
 export interface DatabaseItem {
   docId?: string
 }
