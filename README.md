@@ -2,13 +2,13 @@
 
 > ## case 1 : classify song with calculation
 
-- 앱 : {감정, 날씨, 심박수} 를 서버로 보냄
+- 앱 : {emotion, weather, heartRate} 를 서버로 보냄
 - 서버 : 현재 시간대, 계절 , 심박수 측정도 구함. by. getTime(), getSeason(), sortHeartRate()
 - 앱 : 서버로부터 {songList} 받아서 사용자 앱에 띄워줌 (like or bad도)
 - 함수 : classifySong()
 
-        1. input : 감정, 날씨, 심박수
-        2. 현재 시간대, 계절, 심박수 측정도를 구한다.
+        1. input : emotion, weather, heartRate
+        2. time, season, heartRateState 를 구한다.
         3. 각 노래의 condition 중 감정, 시간, 계절, 날씨, 심박수의 count를 0-1 사이의 값으로 정규화 한다.
         3-1. 값에 음수가 있을 경우 모든 값에 음수의 절대값을 더해준 후 양의 정수 값으로 변환 후 총합이 1인 값을 만들어낸다.
         4. 각 항목의 상위에 해당하는 곡을 추출.
@@ -44,8 +44,8 @@
 > ## sortHeartRate()
 
 - 심박수를 계산하여 정상/비정상 반환
-- input : heartRateMeasurement
-- output : heartRate
+- input : heartRate
+- output : heartRateState
 
 > ## getTime()
 
