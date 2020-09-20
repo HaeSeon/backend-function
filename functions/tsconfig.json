@@ -8,9 +8,10 @@
     "strict": true,
     "target": "es2017",
     "strictNullChecks": true,
+    "strictFunctionTypes": true,
     "alwaysStrict": true,
     "resolveJsonModule": true,
-    "typeRoots": ["./src/interface"]
+    "typeRoots": ["node_modules/@types"]
   },
   "compileOnSave": true,
   "include": ["src"]

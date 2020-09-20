@@ -1,26 +1,70 @@
-import * as functions from "firebase-functions"
-// import { Condition, Song } from "./interface"
+import * as FirebaseFunctions from "firebase-functions"
 
-export const increaseCondition = functions.https.onCall((data, context) => {
-  console.log(data.message)
-  return {
-    message: "안녕? 해당 곡의 condition을 +1해줄게~~",
-  }
+import * as SONGS from "./songs"
+import * as CONDITIONS from "./conditions"
+
+import * as DBCONTROLL from "./data/database_controll_fxs"
+
+export const uploadSampleSongs = DBCONTROLL.uploadSongs
+
+const functions = FirebaseFunctions.region("asia-northeast3")
+
+export const requestSongListWithCondition = functions.https.onCall(async (data, context) => {
+  const request = (data as unknown) as ConditionRequest
+
+  return SONGS.getSongsFromConditionQuery(request).catch((error) => {
+    console.log(error)
+    throw new Error(error)
+  })
+  // const request: ConditionRequest = {emotion, season, time, weather}
 })
 
-export const decreaseCondition = functions.https.onCall((data, context) => {
-  console.log(data.message)
-  return {
-    message: "안녕? 해당 곡의 condition을 -1해줄게~~",
-  }
-})
+export const autoNormalizing = functions.firestore
+  .document("conditions/{docId}")
+  .onWrite(async (change, context) => {
+    console.log("condition document has changed : " + context.params.docId)
+    const condition = (await change.after.data()) as Condition
 
-export const classifySong = functions.https.onCall((data, context) => {
-  console.log(data.message)
-  return {
-    message: "노래를 추천해줄거야아!!",
+    if (!condition || !condition.nomalizedReference) {
+      throw new Error("condition not exist")
+    }
+
+    const normalizedCondition = CONDITIONS.normalizeCondition(Object.assign({}, condition))
+
+    return condition.nomalizedReference
+      .set(normalizedCondition)
+      .then(() => {
+        console.log(`normalized condition updated id : ${condition.nomalizedReference?.id} `)
+      })
+      .catch((error) => {
+        console.log("cannot update normal condition : ")
+        console.log(normalizedCondition)
+        throw new Error(
+          `cannot update normalized condition. id : ${condition.nomalizedReference?.id}` + error
+        )
+      })
+  })
+
+export const increaseCondition = functions.https.onCall(
+  async (data, context): Promise<ActionResult> => {
+    const request = data as ConditionFeedbackRequest
+
+    return CONDITIONS.increaseCondtion(request).catch((error) => {
+      throw new Error(error)
+    })
   }
-})
+)
+
+export const decreaseCondition = functions.https.onCall(
+  async (data, context): Promise<ActionResult> => {
+    const request = data as ConditionFeedbackRequest
+
+    return CONDITIONS.decreaseCondtion(request).catch((error) => {
+      throw new Error(error)
+    })
+  }
+)
+
 // export const addSampleSong = functions
 //   .region("asia-northeast3")
 //   .https.onRequest(async (req, res) => {
@@ -73,17 +117,6 @@ export const classifySong = functions.https.onCall((data, context) => {
 //   res.send(datas)
 // })
 
-// export const classifySong = functions
-//   .region("asia-northeast3")
-//   .https.onCall(async (data, context) => {
-//     //user input
-//     // const emotion = "angry"
-//     // const weather = "snow"
-//     // const time = "morning"
-//     // const season = "fall"
-//     // const heartRate = "abnormal"
-//   })
-
 // export const sortHeartRate = functions.region("asia-northeast3").https.onCall((data, context) => {
 //   const heartRate: number = 80
 //   let heartRateState
@@ -95,62 +128,6 @@ export const classifySong = functions.https.onCall((data, context) => {
 //     console.log("심박수 비정상")
 //   }
 //   return heartRateState
-// })
-
-// export const getSeason = functions.region("asia-northeast3").https.onCall((data, context) => {
-//   let today = new Date()
-//   let nowMonth = today.getMonth() + 1
-
-//   let season
-//   if (nowMonth == 12 || nowMonth == 1 || nowMonth == 2) {
-//     season = "winter"
-//   } else if (nowMonth == 3 || nowMonth == 4 || nowMonth == 5) {
-//     season = "spring"
-//   } else if (nowMonth == 6 || nowMonth == 7 || nowMonth == 8) {
-//     season = "summer"
-//   } else {
-//     season = "fall"
-//   }
-//   return season
-// })
-
-// export const getTime = functions.region("asia-northeast3").https.onCall((data, context) => {
-//   let today = new Date()
-//   let nowTime = today.getHours()
-//   let time
-//   if (
-//     nowTime == 5 ||
-//     nowTime == 6 ||
-//     nowTime == 7 ||
-//     nowTime == 8 ||
-//     nowTime == 9 ||
-//     nowTime == 10 ||
-//     nowTime == 11 ||
-//     nowTime == 12
-//   ) {
-//     time = "morning"
-//   } else if (
-//     nowTime == 13 ||
-//     nowTime == 14 ||
-//     nowTime == 15 ||
-//     nowTime == 16 ||
-//     nowTime == 17 ||
-//     nowTime == 18
-//   ) {
-//     time = "lunch"
-//   } else if (
-//     nowTime == 19 ||
-//     nowTime == 20 ||
-//     nowTime == 21 ||
-//     nowTime == 22 ||
-//     nowTime == 23 ||
-//     nowTime == 0
-//   ) {
-//     time = "evening"
-//   } else {
-//     time = "dawn"
-//   }
-//   return time
 // })
 
 // export const increaseCondition = functions

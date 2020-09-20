@@ -6,8 +6,7 @@ import {
   conditions_collections,
   conditions_normalized_collections,
   songs_collections,
-} from "../App"
-import { Condition, Song } from "../interface"
+} from "../app"
 
 const defaultCondition: Condition = {
   angry: 50,
@@ -71,43 +70,8 @@ export const uploadSongs = functions.https.onRequest((req, res) => {
         return
       }
 
-      //   normalization
-      const normalCondition = normalizeCondition(currentDefaultCondition)
-
-      // todo : need to implement error handling
-      const writeNormalConditionResult = await normalConditionRef.set(normalCondition)
-
-      if (!writeNormalConditionResult) {
-        return
-      }
-
       console.log("song created" + song.songName)
     })
 
   res.send("req")
 })
-
-// get origin type condition, return normalized condition
-const normalizeCondition = (condition: Condition): Condition => {
-  let totalCount = 0
-
-  Object.values(condition).map((value) => {
-    if (typeof value == "number") {
-      totalCount += value
-    }
-  })
-
-  //   const newCondtion = new Map<string, any>()
-  const newCondition: { [key: string]: any } = {}
-  Object.entries(condition).map((entry) => {
-    if (typeof entry[1] == "number") {
-      newCondition[entry[0]] = entry[1] / totalCount
-      //   newCondtion.set(entry[0], entry[1] / totalCount)
-    } else {
-      newCondition[entry[0]] = entry[1]
-      //   newCondtion.set(entry[0], entry[1])
-    }
-  })
-
-  return newCondition as Condition
-}

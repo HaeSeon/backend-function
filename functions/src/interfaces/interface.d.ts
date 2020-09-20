@@ -1,8 +1,13 @@
-export interface DatabaseItem {
+interface ActionResult {
+  ok: boolean
+  error_message?: string
+}
+
+interface DatabaseItem {
   docId?: string
 }
 
-export interface Song extends DatabaseItem {
+interface Song extends DatabaseItem {
   songName: string
   singer: string
   songLink: string
@@ -10,10 +15,23 @@ export interface Song extends DatabaseItem {
   normalizedConditionReference?: FirebaseFirestore.DocumentReference
 }
 
-export interface Condition extends DatabaseItem {
+interface ConditionRequest {
+  emotion: string
+  weather: string
+  time: string
+  season: string
+}
+
+interface ConditionFeedbackRequest {
+  songDocId: string
+  condition: ConditionRequest
+}
+
+interface Condition extends DatabaseItem {
   songReference?: FirebaseFirestore.DocumentReference
   originReference?: FirebaseFirestore.DocumentReference
   nomalizedReference?: FirebaseFirestore.DocumentReference
+  [key: string]: any
 
   angry: number
   flutter: number
