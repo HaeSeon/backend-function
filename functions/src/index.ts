@@ -23,6 +23,10 @@ export const autoNormalizing = functions.firestore
   .document("conditions/{docId}")
   .onWrite(async (change, context) => {
     console.log("condition document has changed : " + context.params.docId)
+    if (!change.after.exists) {
+      console.log("snapshot empty")
+      return
+    }
     const condition = (await change.after.data()) as Condition
 
     if (!condition || !condition.nomalizedReference) {
@@ -30,6 +34,7 @@ export const autoNormalizing = functions.firestore
     }
 
     const normalizedCondition = CONDITIONS.normalizeCondition(Object.assign({}, condition))
+    // console.log(normalizedCondition)
 
     return condition.nomalizedReference
       .set(normalizedCondition)
@@ -50,16 +55,6 @@ export const increaseCondition = functions.https.onCall(
     const request = data as ConditionFeedbackRequest
 
     return CONDITIONS.increaseCondtion(request).catch((error) => {
-      throw new Error(error)
-    })
-  }
-)
-
-export const decreaseCondition = functions.https.onCall(
-  async (data, context): Promise<ActionResult> => {
-    const request = data as ConditionFeedbackRequest
-
-    return CONDITIONS.decreaseCondtion(request).catch((error) => {
       throw new Error(error)
     })
   }

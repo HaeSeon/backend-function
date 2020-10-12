@@ -4,7 +4,7 @@ export const getSongsFromConditionQuery = async (request: ConditionRequest): Pro
   console.log("get songs from query")
 
   console.log(request)
-  const { emotion, season, time, weather } = request
+  const { emotion, season, time, weather, heartRate } = request
 
   //   request check
   if (!(emotion && season && time && weather)) {
@@ -12,19 +12,20 @@ export const getSongsFromConditionQuery = async (request: ConditionRequest): Pro
   }
 
   const songsFromEmotion = getSongRefsFromConditionField(emotion, 10)
-  const songsFromSeason = getSongRefsFromConditionField(season, 3)
-  const songsFromTime = getSongRefsFromConditionField(time, 3)
-  const songsFromWeather = getSongRefsFromConditionField(weather, 4)
+  const songsFromSeason = getSongRefsFromConditionField(season, 1)
+  const songsFromTime = getSongRefsFromConditionField(time, 1)
+  const songsFromWeather = getSongRefsFromConditionField(weather, 1)
+  const songsFromHeartRate = getSongRefsFromConditionField(heartRate, 1)
 
   const songList = await Promise.all<FirebaseFirestore.DocumentReference[]>([
     songsFromEmotion,
     songsFromSeason,
     songsFromTime,
     songsFromWeather,
+    songsFromHeartRate,
   ]).then(async (refsArray) => {
     console.log("finished getting all conditions query")
     const refReducedList: FirebaseFirestore.DocumentReference[] = []
-
     refsArray.map((refs) => {
       refs.map((ref) => {
         if (!refReducedList.map((value) => value.id).includes(ref.id)) {
@@ -93,7 +94,7 @@ const getSongRefsFromConditionField = async (
   console.log(`query to normalized conditions for : ${field}`)
   return new Promise(async (resolve, reject) => {
     const querySnapshot = await conditions_normalized_collections
-      .orderBy(field)
+      .orderBy(field, "desc")
       .limit(count)
       .get()
       .catch((error) => {
@@ -107,6 +108,7 @@ const getSongRefsFromConditionField = async (
 
     const songRefs: FirebaseFirestore.DocumentReference[] = []
     querySnapshot.docs.map((docSnapshot) => {
+      console.log(docSnapshot.id)
       const condition = docSnapshot.data() as Condition
       if (condition.songReference) {
         songRefs.push(condition.songReference)

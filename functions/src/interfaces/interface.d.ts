@@ -20,11 +20,13 @@ interface ConditionRequest {
   weather: string
   time: string
   season: string
+  heartRate: string
 }
 
 interface ConditionFeedbackRequest {
   songDocId: string
   condition: ConditionRequest
+  starRate: number
 }
 
 interface Condition extends DatabaseItem {
@@ -56,4 +58,7 @@ interface Condition extends DatabaseItem {
   lunch: number
   evening: number
   dawn: number
+
+  normalHeartRate: number
+  abnormalHeartRate: number
 }
