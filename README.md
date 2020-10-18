@@ -30,29 +30,12 @@
 
 - 서버 : db에서 해당 songName에 해당하는 데이터 찾고 counter 역할 수행
 
-- 함수
+- 함수 : increaseCondition()
 
-        1. input : songName, condition, like or dislike (1, 2번 공통)
-        2. increaseCondition() : db에서 해당 song의 해당 condition의 count를 +1 해준다.
-
-        3. decreaseCondition() : db에서 해당 song의 해당 condition의 count를 -1 해준다.
-
-        4. output : X (1, 2번 공통)
+        1. input : songName, condition, starCount
+        2. db에서 해당 song의 해당 condition의 count을 사용자 점수만큼 더해준다. (-2, -1 ,0, 1, 2)
+        4. output : X 
 
 ---
 
-> ## sortHeartRate()
 
-- 심박수를 계산하여 정상/비정상 반환
-- input : heartRate
-- output : heartRateState
-
-> ## getTime()
-
-- 시간 분류후 반환
-- output : time
-
-> ## getSeoson()
-
-- 계절 분류 후 반환
-- output : season
