@@ -1,41 +1,34 @@
-# backend-function
+# 🎵사용자 감성기반 음악추천 안드로이드 APP "EmoMusic" backend-function
+## 상명대학교 2020 컴퓨터과학과 졸업프로젝트 bakE팀<br>
 
-> ## case 1 : classify song with calculation
+## What is EmoMusic?
+**사용자의 심박수, 현 위치 주변의 날씨 및 시간 그리고 사용자의 감정을 복합적으로 고려한 음악 추천 안드로이드 어플리케이션**
 
-- 앱 : {emotion, weather, heartRate} 를 서버로 보냄
-- 서버 : 현재 시간대, 계절 , 심박수 측정도 구함. by. getTime(), getSeason(), sortHeartRate()
-- 앱 : 서버로부터 {songList} 받아서 사용자 앱에 띄워줌 (like or bad도)
-- 함수 : classifySong()
+<img width="539" alt="what" src="https://user-images.githubusercontent.com/18053479/101611626-168a7e80-3a4d-11eb-8b2d-6a94185260b5.PNG">
 
-        1. input : emotion, weather, heartRate
-        2. time, season, heartRateState 를 구한다.
-        3. 각 노래의 condition 중 감정, 시간, 계절, 날씨, 심박수의 count를 0-1 사이의 값으로 정규화 한다.
-        3-1. 값에 음수가 있을 경우 모든 값에 음수의 절대값을 더해준 후 양의 정수 값으로 변환 후 총합이 1인 값을 만들어낸다.
-        4. 각 항목의 상위에 해당하는 곡을 추출.
-            감정 : 상위 20%
-            시간 : 상위 10%
-            계절 : 상위 10%
-            날씨 : 상위 20%
-            심박수 : 상위 5%
-            (퍼센트는 결과 정확도 보고 변경 예정, 같은 곡이 나왔을 경우 에러처리)
+[Android application code] - https://github.com/SMU-BakE/recommended_music_final
 
-        5. 이렇게 선별된 곡 중에 5곡 랜덤으로 추출
-        6. output : 5곡의 songList
+## 음악 추천 과정
+<img width="400" alt="노래추천1" src="https://user-images.githubusercontent.com/18053479/101717732-39677200-3ae3-11eb-994b-9a4d6a5a7873.PNG">
 
----
+* 사용자가 추천 요청을 하면 감정, 심박수, 시간, 계절 등을 서버로 보내준다. <br/>
+ ```requestSongListWithCondition(conditions)```
+ 
+* 서버에서 해당 함수가 실행되면 노래 추천을 시작한다. 
+ 
+    <img width="400" alt="노래추천" src="https://user-images.githubusercontent.com/18053479/101726829-9c163900-3af6-11eb-925a-8e668cbde604.png">
 
-> ## case 2 : change condition count
+* 추천된 노래를 사용자에게 보내준다. 
 
-- 앱 : 사용자가 노래에대한 피드백(good or bad)을 보내면 {songName, condition, satisfaction} 을 서버로 보냄
+* 사용자가 노래에대한 피드백 점수를 보내면 노래, condition(감정, 심박수, 시간, 계절 등), 만족도 점수를 서버에 보내준다. </br>
+```increaseCondition()```
 
-- 서버 : db에서 해당 songName에 해당하는 데이터 찾고 counter 역할 수행
+*  서버에서는 db에서 해당 songName에 해당하는 데이터 찾고 점수에 변화를 준다.
+``condition[requestCondition.emotion]+=satisfactionCount``<br>
+``condition[requestCondition.heartRate]+=satisfactionCount``<br>
+``condition[requestCondition.time]+=satisfactionCount``<br>
+``condition[requestCondition.weather]+=satisfactionCount``<br>
 
-- 함수 : increaseCondition()
-
-        1. input : songName, condition, starCount
-        2. db에서 해당 song의 해당 condition의 count을 사용자 점수만큼 더해준다. (-2, -1 ,0, 1, 2)
-        4. output : X 
-
----
-
+* 점수들을 표준화 한다. 
+```autoNormalizing()```
 
